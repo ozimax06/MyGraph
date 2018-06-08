@@ -1,0 +1,66 @@
+package dictionary;
+
+import java.io.*;
+/**
+ *
+ * @author ozan
+ */
+//This program adds and appends name and its value as string to a binary
+//file called dataTable. If the file does not exist, then it creates on
+
+//in clear method, it removes everything from the binary file
+
+public class BinaryFile
+{
+   
+   DataOutputStream output;
+           
+   String key;
+   String value;
+   
+   public BinaryFile(String name, String number)
+   {   
+       key = name;
+       value = number;
+       
+   }  
+   //2nd constructor(empty) for the clearFile method
+   public BinaryFile()
+   {
+       
+   }        
+   
+   public void addToFile(String key, String value)
+   {
+       try
+       {
+           output =new DataOutputStream(new FileOutputStream("dataTable.dat", true));
+           output.writeUTF(key);
+           output.writeUTF(value);
+           output.close();
+           
+       }
+       catch(IOException e)
+       {
+           e.printStackTrace();
+       }    
+       
+
+   }//end of addToFile
+   
+   public void clearFile()
+   {
+       try
+       {
+         output = new DataOutputStream(new FileOutputStream("dataTable.dat"));
+         output.close();
+         
+       }
+       catch(IOException e)
+       {
+           e.printStackTrace();
+       }    
+   }//end of clearFile()  
+   
+   
+}//end of the class   

@@ -1,0 +1,312 @@
+//FOR DIRECTED GRAPHS
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package graphs;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.awt.event.*;
+import java.util.*;
+
+/**
+ *
+ * @author ozan
+ */
+public class MapPanel extends JPanel
+{
+    public static java.util.List<City> vertices = new java.util.ArrayList<City>();
+    public static java.util.List<String> vertices2 = new java.util.ArrayList<String>();
+    public static java.util.List<WeightedEdge> edges = new java.util.ArrayList<WeightedEdge>();
+    public static WeightedGraph<City> graph;
+    public static WeightedGraph<String> graph2;
+   
+    
+    public ShortView myView;
+    public getShortestPath myPath;
+    public static View map;
+    public static graphTools tools;
+    public static graphTools2 tools2;
+    mapBackgorund background;
+    
+    int condition;
+    
+    private Point point = null;
+    
+    String verticeString;
+
+        
+      
+    
+    public MapPanel()
+    {    
+           setLayout (new BoxLayout (this, BoxLayout.Y_AXIS));
+           add (Box.createRigidArea (new Dimension (0,450 )));
+           tools = new graphTools();
+           
+           //add(tools.Panel);
+           
+           tools.addCityButton.addActionListener (new cityListener());
+           tools.addEdgeButton.addActionListener (new edgeListener());
+           tools.distanceButton.addActionListener (new distanceListener());
+           
+           condition = 0;
+
+           
+     PointListener listener = new PointListener();
+		
+    addMouseListener (listener);
+    addMouseMotionListener (listener);
+           
+
+
+
+	         
+
+
+    
+      
+    setPreferredSize (new Dimension(820, 550));
+    setBackground (Color.black); 
+    }
+    
+    
+    
+    //*********************
+    //GRAPHICS PAGE
+    public void paintComponent (Graphics page)
+    {   add(tools.distancePanel);
+        add(tools.mainPanel);
+        super.paintComponent(page);
+        if (point != null && point.x < 820 && point.y < 450)
+        {    
+                    page.setColor(Color.blue);
+	            page.drawOval(point.x, point.y, 15, 15);
+        } 
+ 
+        
+        if (condition == 2)
+        {
+           page.setColor(Color.blue);
+           
+           map.draw(page);
+          
+        } 
+        
+        if (condition == 1)
+        {
+           page.setColor(Color.blue);
+           
+           map.draw(page); 
+           myView.draw(page);
+            
+            
+            //tools.distancePanel.
+            //page.setColor(Color.blue);
+           //remove(graphTools.cityPanel);
+           //add(graphTools.distancePanel);
+           
+           //myView.draw(page);
+            
+        } 
+   
+      
+    }
+    
+    static class City implements Displayable
+    {
+          private int x, y;
+	  private String name;
+			
+		City(String name, int x, int y)
+		{
+			  this.name = name;
+			  this.x = x;
+			  this.y = y;
+		}
+			
+		public int getX()
+		{ 
+			   return x;
+		}
+			
+		public int getY()	  
+	        {
+			   return y;
+		}
+			
+		public String getName()
+		{
+		   return name;
+	        }
+	 }// end of City
+    
+    
+    //LISTENERS
+    //This listen's the citys name and its coordinates
+    //after a validation process
+    private class cityListener implements ActionListener
+    {
+             int x;
+             int y;
+          public void actionPerformed (ActionEvent event)
+          {
+             String city = tools.cityToEnter.getText();
+
+             
+             //use exception handler to make sure that user enters integer
+             //to the textboxes
+             try
+             {
+               int xPosition = Integer.parseInt(tools.xToEnter.getText());
+               int yPosition = Integer.parseInt(tools.yToEnter.getText());
+               x = xPosition;
+               y = yPosition;
+             }
+             catch(Exception e)
+             {
+                 tools.empty3.setText("                             Enter a number!!!!!");
+             }   
+             
+             //IF The city contains the name already it wont except the data
+             if(vertices2.contains(city))
+             {
+                 tools.empty3.setText("                             city is already exist!!!!!");
+             }
+             else
+             {
+               vertices.add(new City(city,x,y ));
+               vertices2.add(city);
+                graph = new WeightedGraph<City>(edges, vertices);
+                graph2 = new WeightedGraph<String>(edges, vertices2);
+                map = new View(graph);
+                condition = 2;
+                //remove(tools.mainPanel);
+                repaint();
+               
+               
+             }   
+             
+             
+             
+             
+             
+          }    
+             
+              
+              
+        }//end of city listener
+    
+    
+          private class edgeListener implements ActionListener
+          {
+              String vertexA;
+              String vertexB;
+              int cost;
+              public void actionPerformed (ActionEvent event)
+              {
+                  
+                 try
+                 {
+                    vertexA = tools.firstEnter.getText();
+                    vertexB = tools.lastEnter.getText();
+                    cost = Integer.parseInt(tools.costEnter.getText());
+                    
+                 }
+                 
+                 catch(Exception e)
+                 {
+                    tools.empty3.setText("                             Invalid data types!!!!!");
+                 }  
+                 
+                 if(!vertices2.contains(vertexA) || !vertices2.contains(vertexB))
+                 {
+                     tools.empty3.setText("                             Enter valid cities!!");
+                 }  
+                 else
+                 {
+                     int initial = vertices2.indexOf(vertexA);
+                     int terminal = vertices2.indexOf(vertexB);
+                     edges.add(new WeightedEdge(initial,terminal,cost));
+                     graph = new WeightedGraph<City>(edges, vertices);
+                     graph2 = new WeightedGraph<String>(edges, vertices2);
+                     map = new View(graph);
+                     condition = 2;
+                     //remove(tools.mainPanel);
+                     repaint();
+                     
+                     
+                     
+                 }    
+                  
+              }
+          }//end of edgeListener
+          
+          
+          private class distanceListener implements ActionListener
+          {
+
+              public void actionPerformed (ActionEvent event)
+              {
+                  String first = tools.initialCity.getText();
+                  String last = tools.terminalCity.getText();
+                  myPath = new getShortestPath();
+                  myPath.getDistance(first, last);
+                  map = new View(graph);
+                  myView = new ShortView(getShortestPath.graph3);
+                  condition = 1;
+                  repaint();
+                  
+                  
+                
+  
+                  
+              }
+          }
+          
+          
+          
+          
+ private class PointListener implements MouseListener, MouseMotionListener
+ {
+          //--------------------------------------------------------------
+          //  Captures the initial position at which the mouse button is
+          //  pressed.
+          //--------------------------------------------------------------
+
+                 
+      public void mousePressed (MouseEvent event)
+      {
+         point = event.getPoint();
+         tools.xToEnter.setText(""+point.x);
+         tools.yToEnter.setText(""+point.y);
+	 repaint();
+	 	
+      }
+		
+     public void mouseReleased (MouseEvent event)
+      {
+          point = null;
+      }	 
+      
+      public void mouseMoved (MouseEvent event)
+      {
+         //point = event.getPoint();
+			//repaint();
+      }
+
+      
+      //--------------------------------------------------------------
+      //  Provide empty definitions for unused event methods.
+      //--------------------------------------------------------------
+      public void mouseClicked (MouseEvent event) {}
+      public void mouseEntered (MouseEvent event) {}
+      public void mouseExited (MouseEvent event) {}
+      public void mouseDragged (MouseEvent event) {}
+                 
+ }//end of PointListener
+ 
+          
+    }//end of class

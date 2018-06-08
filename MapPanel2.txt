@@ -1,0 +1,89 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package graphs;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+/**
+ *
+ * @author ozan
+ */
+public class MapPanel extends JPanel
+{
+         public static java.util.List<City> vertices = new java.util.ArrayList<City>();
+         public static java.util.List<String> vertices2 = new java.util.ArrayList<String>();
+         public static java.util.List<WeightedEdge> edges = new java.util.ArrayList<WeightedEdge>();
+       
+         
+	    
+        private WeightedGraph<City> graph;
+        View map; 
+    
+    public MapPanel()
+    {
+        vertices.add(new City("ank", 54, 67));
+        vertices.add(new City("istanbul", 77, 300));
+        vertices.add(new City("bodrum", 400, 300));
+        vertices.add(new City("izmir", 701, 328));
+        vertices.add(new City("eskisehir", 250, 400));
+        
+        
+        edges.add(new WeightedEdge(0,1,23));
+        edges.add(new WeightedEdge(2,1,56));
+        edges.add(new WeightedEdge(2,3,877));
+        edges.add(new WeightedEdge(4, 2,216));
+        edges.add(new WeightedEdge(0,3,556));
+        
+	         
+    graph = new WeightedGraph<City>(edges, vertices);
+    map = new View(graph);
+
+    
+      
+    setPreferredSize (new Dimension(800, 500));
+    setBackground (Color.black); 
+    }
+	 
+	 public void paintComponent (Graphics page)
+	 {
+	   super.paintComponent(page);
+           //set the color of vertices and edges
+           page.setColor(Color.red);
+         
+		map.draw(page);
+         }
+    
+    static class City implements Displayable
+    {
+          private int x, y;
+	  private String name;
+			
+		City(String name, int x, int y)
+		{
+			  this.name = name;
+			  this.x = x;
+			  this.y = y;
+		}
+			
+		public int getX()
+		{ 
+			   return x;
+		}
+			
+		public int getY()	  
+	        {
+			   return y;
+		}
+			
+		public String getName()
+		{
+		   return name;
+	        }
+	 }// end of City
+    
+            
+    
+}//end of the class
